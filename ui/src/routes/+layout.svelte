@@ -42,9 +42,9 @@
 					/>
 				</svg>
 			</button>
-			<button class="btn variant-filled-primary hidden md:inline-flex">Home</button>
-			<button class="btn variant-filled-primary hidden md:inline-flex">Temperature</button>
-			<button class="btn variant-filled-primary hidden md:inline-flex">Timer</button>
+			<a href="/"class="btn variant-filled-primary hidden md:inline-flex">Home</a>
+			<a href="/temperature"class="btn variant-filled-primary hidden md:inline-flex">Temperature</a>
+			<a href="/timer"class="btn variant-filled-primary hidden md:inline-flex">Timer</a>
 		</svelte:fragment>
 		<svelte:fragment slot="trail">Daikin AC Remote</svelte:fragment>
 	</AppBar>
