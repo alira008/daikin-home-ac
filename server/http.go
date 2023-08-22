@@ -1,6 +1,7 @@
 package server
 
 import (
+	"encoding/json"
 	"net/http"
 	"strconv"
 
@@ -272,6 +273,15 @@ func (hs *HttpServer) ChangeEconoState(w http.ResponseWriter, r *http.Request) {
 	hs.Database.SaveState(daikin)
 }
 
+func (hs *HttpServer) GetTemperature(w http.ResponseWriter, r *http.Request) {
+    w.Header().Set("Access-Control-Allow-Origin", "*")
+    w.Header().Set("Content-Type", "application/json")
+
+    daikin := hs.Database.LoadState()
+
+    json.NewEncoder(w).Encode(daikin.Temperature)
+}
+
 func NewHttpServer(addr string) *http.Server {
     database := OpenDatabase()
 	server := &HttpServer{
@@ -279,6 +289,7 @@ func NewHttpServer(addr string) *http.Server {
     }
 
 	r := mux.NewRouter()
+    r.HandleFunc("/temperature", server.GetTemperature).Methods("GET")
 	r.HandleFunc("/temperature/{temp}", server.ChangeTemperature).Methods("GET")
 	r.HandleFunc("/mode/{state}", server.ChangeMode).Methods("GET")
 	r.HandleFunc("/timer/{state}", server.ChangeTimerState).Methods("GET")
