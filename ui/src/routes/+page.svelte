@@ -1,8 +1,8 @@
 <script>
 	import { page } from '$app/stores';
 
-	// let host = $page.url.hostname;
-	let host = '192.168.1.228';
+	let host = $page.url.hostname;
+	// let host = '192.168.1.228';
 
 	/**
     @param {boolean | number} state 

@@ -1,12 +1,21 @@
 <script>
 	import { page } from '$app/stores';
+	import { onMount } from 'svelte';
+
+    /** @type {import ('./$types').PageServerData} */
+	export let data;
 
 	// let host = $page.url.hostname;
 	let host = '192.168.1.228';
 	let temperatureInput = 76;
+
+	onMount(() => {
+		temperatureInput = Math.round(data.temperature * 1.8 + 32);
+	});
+
 	async function setTemperature() {
-        // Convert Fahrenheit to celsius
-		const celsius = (temperatureInput - 32.0) / 1.8;
+		// Convert Fahrenheit to celsius
+		const celsius = Math.round((temperatureInput - 32.0) / 1.8);
 		await fetch(`http://${host}:5520/temperature/${celsius}`);
 	}
 </script>
