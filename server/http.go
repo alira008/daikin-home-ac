@@ -65,7 +65,7 @@ func convertStrFanSpeedToEnum(strFanSpeed string) (FanSpeed, error) {
 }
 
 func (hs *HttpServer) ChangeTemperature(w http.ResponseWriter, r *http.Request) {
-    w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Access-Control-Allow-Origin", "*")
 
 	// retrieve state from db
 	daikin := hs.Database.LoadState()
@@ -88,7 +88,7 @@ func (hs *HttpServer) ChangeTemperature(w http.ResponseWriter, r *http.Request) 
 }
 
 func (hs *HttpServer) ChangeMode(w http.ResponseWriter, r *http.Request) {
-    w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Access-Control-Allow-Origin", "*")
 
 	// retrieve state from db
 	daikin := hs.Database.LoadState()
@@ -111,44 +111,36 @@ func (hs *HttpServer) ChangeMode(w http.ResponseWriter, r *http.Request) {
 }
 
 func (hs *HttpServer) ChangeTimerState(w http.ResponseWriter, r *http.Request) {
-    w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Access-Control-Allow-Origin", "*")
 
 	// retrieve state from db
 	daikin := hs.Database.LoadState()
 	vars := mux.Vars(r)
+	timer := vars["timer"]
 	strState := vars["state"]
+    strTimeDiff := vars["timeDiff"]
 
 	state, err := strconv.ParseBool(strState)
 	if err != nil {
 		http.Error(w, "invalid timer state passed", http.StatusBadRequest)
 	}
 
-	// change state
-	daikin.Timer = state
-
-	// send new state
-	daikin.Send()
-
-	// save state to db
-	hs.Database.SaveState(daikin)
-}
-
-func (hs *HttpServer) ChangeDelay(w http.ResponseWriter, r *http.Request) {
-    w.Header().Set("Access-Control-Allow-Origin", "*")
-
-	// retrieve state from db
-	daikin := hs.Database.LoadState()
-
-	vars := mux.Vars(r)
-	strState := vars["minutes"]
-
-	state, err := strconv.Atoi(strState)
+	timeDiff, err := strconv.Atoi(strTimeDiff)
 	if err != nil {
-		http.Error(w, "invalid timer delay passed", http.StatusBadRequest)
+		http.Error(w, "invalid timer difference passed", http.StatusBadRequest)
 	}
 
 	// change state
-	daikin.TimerDelay = state
+	if timer == "on" {
+		daikin.OnTimer = state
+	} else if timer == "off" {
+		daikin.OffTimer = state
+	} else {
+		http.Error(w, "invalid format for timer given", http.StatusBadRequest)
+	}
+
+    // set delay
+    daikin.TimerDelay = timeDiff
 
 	// send new state
 	daikin.Send()
@@ -158,7 +150,7 @@ func (hs *HttpServer) ChangeDelay(w http.ResponseWriter, r *http.Request) {
 }
 
 func (hs *HttpServer) ChangePowerState(w http.ResponseWriter, r *http.Request) {
-    w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Access-Control-Allow-Origin", "*")
 
 	// retrieve state from db
 	daikin := hs.Database.LoadState()
@@ -181,7 +173,7 @@ func (hs *HttpServer) ChangePowerState(w http.ResponseWriter, r *http.Request) {
 }
 
 func (hs *HttpServer) ChangeFanSpeed(w http.ResponseWriter, r *http.Request) {
-    w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Access-Control-Allow-Origin", "*")
 
 	// retrieve state from db
 	daikin := hs.Database.LoadState()
@@ -204,7 +196,7 @@ func (hs *HttpServer) ChangeFanSpeed(w http.ResponseWriter, r *http.Request) {
 }
 
 func (hs *HttpServer) ChangeSwingState(w http.ResponseWriter, r *http.Request) {
-    w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Access-Control-Allow-Origin", "*")
 
 	// retrieve state from db
 	daikin := hs.Database.LoadState()
@@ -228,7 +220,7 @@ func (hs *HttpServer) ChangeSwingState(w http.ResponseWriter, r *http.Request) {
 }
 
 func (hs *HttpServer) ChangePowerfulState(w http.ResponseWriter, r *http.Request) {
-    w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Access-Control-Allow-Origin", "*")
 
 	// retrieve state from db
 	daikin := hs.Database.LoadState()
@@ -251,7 +243,7 @@ func (hs *HttpServer) ChangePowerfulState(w http.ResponseWriter, r *http.Request
 }
 
 func (hs *HttpServer) ChangeEconoState(w http.ResponseWriter, r *http.Request) {
-    w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Access-Control-Allow-Origin", "*")
 
 	// retrieve state from db
 	daikin := hs.Database.LoadState()
@@ -274,26 +266,25 @@ func (hs *HttpServer) ChangeEconoState(w http.ResponseWriter, r *http.Request) {
 }
 
 func (hs *HttpServer) GetTemperature(w http.ResponseWriter, r *http.Request) {
-    w.Header().Set("Access-Control-Allow-Origin", "*")
-    w.Header().Set("Content-Type", "application/json")
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Content-Type", "application/json")
 
-    daikin := hs.Database.LoadState()
+	daikin := hs.Database.LoadState()
 
-    json.NewEncoder(w).Encode(daikin.Temperature)
+	json.NewEncoder(w).Encode(daikin.Temperature)
 }
 
 func NewHttpServer(addr string) *http.Server {
-    database := OpenDatabase()
+	database := OpenDatabase()
 	server := &HttpServer{
-        Database: database,
-    }
+		Database: database,
+	}
 
 	r := mux.NewRouter()
-    r.HandleFunc("/temperature", server.GetTemperature).Methods("GET")
+	r.HandleFunc("/temperature", server.GetTemperature).Methods("GET")
 	r.HandleFunc("/temperature/{temp}", server.ChangeTemperature).Methods("GET")
 	r.HandleFunc("/mode/{state}", server.ChangeMode).Methods("GET")
-	r.HandleFunc("/timer/{state}", server.ChangeTimerState).Methods("GET")
-	r.HandleFunc("/timerdelay/{minutes}", server.ChangeDelay).Methods("GET")
+	r.HandleFunc("/timer/{timer}/{state}/{timeDiff}", server.ChangeTimerState).Methods("GET")
 	r.HandleFunc("/power/{state}", server.ChangePowerState).Methods("GET")
 	r.HandleFunc("/fanspeed/{state}", server.ChangeFanSpeed).Methods("GET")
 	r.HandleFunc("/swing/{state}", server.ChangeSwingState).Methods("GET")
