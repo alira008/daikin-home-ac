@@ -32,7 +32,8 @@ const (
 type DaikinState struct {
 	Temperature int      `json:"temperature"`
 	Mode        Mode     `json:"mode"`
-	Timer       bool     `json:"timer"`
+	OnTimer     bool     `json:"onTimer"`
+	OffTimer    bool     `json:"offTimer"`
 	TimerDelay  int      `json:"timerDelay"`
 	Power       bool     `json:"power"`
 	FanSpeed    FanSpeed `json:"fanSpeed"`
@@ -164,10 +165,13 @@ func createFrame3(ds *DaikinState) Frame {
 	// Bit always on
 	frame[5] |= 1 << 3
 
-	// Set bits for timer
-	if ds.Timer {
+	// Set bits for Off Timer
+	if ds.OffTimer {
 		frame[5] |= 0x2
-	} else {
+	}
+
+	// Set bits for On Timer
+	if ds.OnTimer {
 		frame[5] |= 0x4
 	}
 
@@ -191,9 +195,14 @@ func createFrame3(ds *DaikinState) Frame {
 	}
 
 	// Set bits for timer
-	frame[10] |= byte(ds.TimerDelay)
-	frame[11] |= byte(ds.TimerDelay >> 4)
-	frame[12] |= byte(ds.TimerDelay >> 8)
+	if ds.OnTimer {
+        frame[10] |= byte(ds.TimerDelay >> 8)
+		frame[11] |= byte(ds.TimerDelay)
+	}
+	if ds.OffTimer {
+        frame[11] |= byte(ds.TimerDelay >> 8)
+		frame[12] |= byte(ds.TimerDelay)
+	}
 
 	// Set bits for powerful
 	if ds.Powerful {

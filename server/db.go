@@ -3,7 +3,8 @@ package server
 import (
 	"database/sql"
 	"log"
-    _ "github.com/mattn/go-sqlite3"
+
+	_ "github.com/mattn/go-sqlite3"
 )
 
 type Database struct {
@@ -11,7 +12,7 @@ type Database struct {
 }
 
 func (database *Database) LoadState() *DaikinState {
-	statement, err := database.session.Prepare("Select Temperature, Mode, TimerState, TimerDelay, PowerState, FanSpeed, SwingState, PowerfulState, EconoState, ComfortState from State")
+	statement, err := database.session.Prepare("Select Temperature, Mode, OnTimerState, OffTimerState, TimerDelay, PowerState, FanSpeed, SwingState, PowerfulState, EconoState, ComfortState from State")
 
 	// Error creating statement
 	if err != nil {
@@ -28,7 +29,7 @@ func (database *Database) LoadState() *DaikinState {
 	daikinState := DaikinState{}
 
 	for results.Next() {
-		err := results.Scan(&daikinState.Temperature, &daikinState.Mode, &daikinState.Timer, &daikinState.TimerDelay, &daikinState.Power, &daikinState.FanSpeed, &daikinState.Swing, &daikinState.Powerful, &daikinState.Econo, &daikinState.Comfort)
+		err := results.Scan(&daikinState.Temperature, &daikinState.Mode, &daikinState.OnTimer, &daikinState.OffTimer, &daikinState.TimerDelay, &daikinState.Power, &daikinState.FanSpeed, &daikinState.Swing, &daikinState.Powerful, &daikinState.Econo, &daikinState.Comfort)
 
 		// Error getting columns
 		if err != nil {
@@ -42,14 +43,14 @@ func (database *Database) LoadState() *DaikinState {
 }
 
 func (database *Database) SaveState(state *DaikinState) {
-	statement, err := database.session.Prepare("UPDATE State SET Temperature = ?, Mode = ?, TimerState = ?, TimerDelay = ?, PowerState = ?, FanSpeed = ?, SwingState = ?, PowerfulState = ?, EconoState = ?, ComfortState = ?")
+	statement, err := database.session.Prepare("UPDATE State SET Temperature = ?, Mode = ?, OnTimerState = ?, OffTimerState = ?, TimerDelay = ?, PowerState = ?, FanSpeed = ?, SwingState = ?, PowerfulState = ?, EconoState = ?, ComfortState = ?")
 
 	// Error creating statement
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	_, err = statement.Exec(state.Temperature, state.Mode, state.Timer, state.TimerDelay, state.Power, state.FanSpeed, state.Swing, state.Powerful, state.Econo, state.Comfort)
+	_, err = statement.Exec(state.Temperature, state.Mode, state.OnTimer, state.OffTimer, state.TimerDelay, state.Power, state.FanSpeed, state.Swing, state.Powerful, state.Econo, state.Comfort)
 
 	// Error executing query
 	if err != nil {
@@ -63,7 +64,7 @@ func OpenDatabase() *Database {
 	db, err := sql.Open("sqlite3", "./daikin.db")
 
 	if err != nil {
-        log.Fatal(err)
+		log.Fatal(err)
 	}
 
 	return &Database{
