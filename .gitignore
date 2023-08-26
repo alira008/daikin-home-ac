@@ -6,5 +6,5 @@ build
 compile_commands.json
 .cache
 daikin.db
-daikin-api
+daikin-server
 ui/.yarn
