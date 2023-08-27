@@ -5,8 +5,7 @@
     /** @type {import ('./$types').PageServerData} */
 	export let data;
 
-	// let host = $page.url.hostname;
-	let host = '192.168.1.228';
+	let host = $page.url.hostname;
 	let temperatureInput = 76;
 
 	onMount(() => {

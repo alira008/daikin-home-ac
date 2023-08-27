@@ -1,7 +1,6 @@
 /** @type {import('./$types').PageServerLoad} */
-export async function load({ url }) {
-	let host = url.host;
-	// const host = '192.168.1.228';
+export async function load({url}) {
+    const host = url.hostname
 	const response = await fetch(`http://${host}:5520/temperature`);
 
 	const responseJson = await response.json();

@@ -2,7 +2,6 @@
 	import { page } from '$app/stores';
 
 	let host = $page.url.hostname;
-	// let host = '192.168.1.228';
 
 	/**
     @param {boolean | number} state 
@@ -68,21 +67,47 @@
 	<h3 class="h3">Fan Speed</h3>
 	<div class="flex flex-col gap-2">
 		<div class="flex gap-2 justify-center md:hidden">
-			<button class="btn variant-filled-primary" on:click={() => setState('fanspeed', 10)}>Automatic</button>
-			<button class="btn variant-filled-tertiary" on:click={() => setState('fanspeed', 11)}>Silent</button>
+			<button class="btn variant-filled-primary" on:click={() => setState('fanspeed', 10)}
+				>Automatic</button
+			>
+			<button class="btn variant-filled-tertiary" on:click={() => setState('fanspeed', 11)}
+				>Silent</button
+			>
 		</div>
 		<div class="flex gap-2">
-            <button class="btn variant-filled-primary hidden md:inline-flex" on:click={() => setState('fanspeed', 10)}>Automatic</button>
-            <button class="btn variant-filled-tertiary hidden md:inline-flex" on:click={() => setState('fanspeed', 11)}>Silent</button>
-			<button class="btn variant-filled-tertiary" on:click={() => setState('fanspeed', 3)}>Speed 1</button>
-			<button class="btn variant-filled-tertiary" on:click={() => setState('fanspeed', 4)}>Speed 2</button>
-			<button class="btn variant-filled-tertiary" on:click={() => setState('fanspeed', 5)}>Speed 3</button>
-			<button class="btn variant-filled-tertiary hidden md:inline-flex" on:click={() => setState('fanspeed', 6)}>Speed 4</button>
-			<button class="btn variant-filled-tertiary hidden md:inline-flex" on:click={() => setState('fanspeed', 7)}>Speed 5</button>
+			<button
+				class="btn variant-filled-primary hidden md:inline-flex"
+				on:click={() => setState('fanspeed', 10)}>Automatic</button
+			>
+			<button
+				class="btn variant-filled-tertiary hidden md:inline-flex"
+				on:click={() => setState('fanspeed', 11)}>Silent</button
+			>
+			<button class="btn variant-filled-tertiary" on:click={() => setState('fanspeed', 3)}
+				>Speed 1</button
+			>
+			<button class="btn variant-filled-tertiary" on:click={() => setState('fanspeed', 4)}
+				>Speed 2</button
+			>
+			<button class="btn variant-filled-tertiary" on:click={() => setState('fanspeed', 5)}
+				>Speed 3</button
+			>
+			<button
+				class="btn variant-filled-tertiary hidden md:inline-flex"
+				on:click={() => setState('fanspeed', 6)}>Speed 4</button
+			>
+			<button
+				class="btn variant-filled-tertiary hidden md:inline-flex"
+				on:click={() => setState('fanspeed', 7)}>Speed 5</button
+			>
 		</div>
 		<div class="flex gap-2 justify-center md:hidden">
-			<button class="btn variant-filled-tertiary" on:click={() => setState('fanspeed', 6)}>Speed 4</button>
-			<button class="btn variant-filled-tertiary" on:click={() => setState('fanspeed', 7)}>Speed 5</button>
+			<button class="btn variant-filled-tertiary" on:click={() => setState('fanspeed', 6)}
+				>Speed 4</button
+			>
+			<button class="btn variant-filled-tertiary" on:click={() => setState('fanspeed', 7)}
+				>Speed 5</button
+			>
 		</div>
 	</div>
 </div>
