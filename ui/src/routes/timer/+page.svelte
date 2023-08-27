@@ -5,8 +5,6 @@
 	let onDatetime = DateTime.now().toFormat('HH:mm');
 
 	let host = $page.url.hostname;
-	// let host = '192.168.1.228';
-	let temperatureInput = 76;
 
 	/**
 	 *
