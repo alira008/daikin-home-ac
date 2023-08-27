@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"strconv"
 
+	"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
 )
 
@@ -65,7 +66,6 @@ func convertStrFanSpeedToEnum(strFanSpeed string) (FanSpeed, error) {
 }
 
 func (hs *HttpServer) ChangeTemperature(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Access-Control-Allow-Origin", "*")
 
 	// retrieve state from db
 	daikin := hs.Database.LoadState()
@@ -88,7 +88,6 @@ func (hs *HttpServer) ChangeTemperature(w http.ResponseWriter, r *http.Request) 
 }
 
 func (hs *HttpServer) ChangeMode(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Access-Control-Allow-Origin", "*")
 
 	// retrieve state from db
 	daikin := hs.Database.LoadState()
@@ -111,14 +110,13 @@ func (hs *HttpServer) ChangeMode(w http.ResponseWriter, r *http.Request) {
 }
 
 func (hs *HttpServer) ChangeTimerState(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Access-Control-Allow-Origin", "*")
 
 	// retrieve state from db
 	daikin := hs.Database.LoadState()
 	vars := mux.Vars(r)
 	timer := vars["timer"]
 	strState := vars["state"]
-    strTimeDiff := vars["timeDiff"]
+	strTimeDiff := vars["timeDiff"]
 
 	state, err := strconv.ParseBool(strState)
 	if err != nil {
@@ -139,8 +137,8 @@ func (hs *HttpServer) ChangeTimerState(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "invalid format for timer given", http.StatusBadRequest)
 	}
 
-    // set delay
-    daikin.TimerDelay = timeDiff
+	// set delay
+	daikin.TimerDelay = timeDiff
 
 	// send new state
 	daikin.Send()
@@ -150,7 +148,6 @@ func (hs *HttpServer) ChangeTimerState(w http.ResponseWriter, r *http.Request) {
 }
 
 func (hs *HttpServer) ChangePowerState(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Access-Control-Allow-Origin", "*")
 
 	// retrieve state from db
 	daikin := hs.Database.LoadState()
@@ -173,7 +170,6 @@ func (hs *HttpServer) ChangePowerState(w http.ResponseWriter, r *http.Request) {
 }
 
 func (hs *HttpServer) ChangeFanSpeed(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Access-Control-Allow-Origin", "*")
 
 	// retrieve state from db
 	daikin := hs.Database.LoadState()
@@ -196,7 +192,6 @@ func (hs *HttpServer) ChangeFanSpeed(w http.ResponseWriter, r *http.Request) {
 }
 
 func (hs *HttpServer) ChangeSwingState(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Access-Control-Allow-Origin", "*")
 
 	// retrieve state from db
 	daikin := hs.Database.LoadState()
@@ -220,7 +215,6 @@ func (hs *HttpServer) ChangeSwingState(w http.ResponseWriter, r *http.Request) {
 }
 
 func (hs *HttpServer) ChangePowerfulState(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Access-Control-Allow-Origin", "*")
 
 	// retrieve state from db
 	daikin := hs.Database.LoadState()
@@ -243,7 +237,6 @@ func (hs *HttpServer) ChangePowerfulState(w http.ResponseWriter, r *http.Request
 }
 
 func (hs *HttpServer) ChangeEconoState(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Access-Control-Allow-Origin", "*")
 
 	// retrieve state from db
 	daikin := hs.Database.LoadState()
@@ -266,7 +259,6 @@ func (hs *HttpServer) ChangeEconoState(w http.ResponseWriter, r *http.Request) {
 }
 
 func (hs *HttpServer) GetTemperature(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.Header().Set("Content-Type", "application/json")
 
 	daikin := hs.Database.LoadState()
@@ -291,8 +283,14 @@ func NewHttpServer(addr string) *http.Server {
 	r.HandleFunc("/powerful/{state}", server.ChangePowerfulState).Methods("GET")
 	r.HandleFunc("/econo/{state}", server.ChangeEconoState).Methods("GET")
 
+	handler := handlers.CORS(
+		handlers.AllowedOrigins([]string{"*"}),
+		handlers.AllowedMethods([]string{"GET"}),
+		handlers.AllowedHeaders([]string{"X-RequestedWith", "Content-Type", "Authorization", "Accept"}),
+	)(r)
+
 	return &http.Server{
 		Addr:    addr,
-		Handler: r,
+		Handler: handler,
 	}
 }
