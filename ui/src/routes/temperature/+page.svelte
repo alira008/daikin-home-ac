@@ -2,14 +2,17 @@
 	import { page } from '$app/stores';
 	import { onMount } from 'svelte';
 
-    /** @type {import ('./$types').PageServerData} */
-	export let data;
+	/** @type {import ('./$types').PageServerData} */
+	// export let data;
 
 	let host = $page.url.hostname;
 	let temperatureInput = 76;
 
-	onMount(() => {
-		temperatureInput = Math.round(data.temperature * 1.8 + 32);
+	onMount(async () => {
+		const response = await fetch(`http://${host}:5520/temperature`);
+
+		const temperature = await response.json();
+		temperatureInput = Math.round(temperature * 1.8 + 32);
 	});
 
 	async function setTemperature() {
